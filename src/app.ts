@@ -14,8 +14,10 @@ dotenv.config({
     path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
 });
 
-const DB_URL = process.env.MONGODB_URI;
+const DB_URL = process.env.DB_URL;
 const PORT = process.env.PORT;
+
+console.log('Environment Variables: ' + DB_URL +',' + PORT);
 
 mongoose
     .connect(DB_URL as string)

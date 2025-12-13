@@ -22,7 +22,8 @@ export function createServer(dbUrl: string, port: number) {
 
     const app = express();
     app.use(express.json());
-
+    console.log("Setting up routes");
+    
     app.post('/orders', ((req: Request, res: Response) => createOrder(req, res)) as RequestHandler);
     app.get('/orders', ((req: Request, res: Response) => getAllOrders(req, res)) as RequestHandler);
     app.put('/orders/:id', ((req: Request, res: Response) => updateOrder(req, res)) as RequestHandler);

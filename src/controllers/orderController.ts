@@ -25,7 +25,7 @@ export const createOrder = async (req: Request, res: Response) => {
         shippingAddress,
         total,
     });
-
+    console.log('Creating order with total: ' + total);
     await newOrder.save();
     res.send(`Order created with total: ${total}`);
 };

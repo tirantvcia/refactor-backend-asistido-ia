@@ -28,4 +28,3 @@ describe('Status endpoint', () => {
         expect(response.body).toEqual({ status: 'ok' });
     });
 });
-

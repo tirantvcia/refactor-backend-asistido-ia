@@ -78,4 +78,14 @@ describe('should create an order', () => {
         
         }
     );
+    it('fails to create order with missing items', async () => {
+        const newOrder = {
+            items: []  ,
+            shippingAddress: '123 Test St, Test City, TX 12345'
+        }
+        const response = await request(server).post('/orders').send(newOrder);
+        expect(response.text).toBe('The order must have at least one item');
+        expect(response.status).toBe(200);
+    }
+    );
 });

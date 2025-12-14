@@ -60,4 +60,22 @@ describe('should create an order', () => {
         expect(response.text).toBe(`Order created with total: 100`);
         
     });
+    it('creates a new order with discount', async () => {
+        const newOrder = {
+            items: [
+                {
+                    productId: 'prod123',
+                    quantity: 1,
+                    price: 100
+                }
+            ]  ,
+            shippingAddress: '123 Test St, Test City, TX 12345',
+            discountCode: 'DISCOUNT20'  
+        }
+        const response = await request(server).post('/orders').send(newOrder);
+        expect(response.status).toBe(200);
+        expect(response.text).toBe(`Order created with total: 80`);
+        
+        }
+    );
 });

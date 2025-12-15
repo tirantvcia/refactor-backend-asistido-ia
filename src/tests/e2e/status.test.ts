@@ -113,11 +113,36 @@ describe('should get all orders', () => {
         await mongoose.connection.collection('orders').deleteMany({});
     });
 
-    it('retrieves all orders', async () => {
+    it('retrieves empty list of orders', async () => {
         const response = await request(server).get('/orders');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
         expect(response.body).toEqual([]);
-    }
-    );
+    });
+    
+    it('retrieves list with one order after create it', async () => {
+        const newOrder = {
+            items: [
+                {
+                    productId: 'prod123',
+                    quantity: 1,
+                    price: 100
+                }
+            ]  ,
+            shippingAddress: '123 Test St, Test City, TX 12345'
+
+        }
+        await request(server).post('/orders').send(newOrder);
+        const response = await request(server).get('/orders');
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body.length).toBe(1);
+        expect(response.body[0]).toMatchObject({
+            items: newOrder.items,
+            shippingAddress: newOrder.shippingAddress,
+            total: 100
+        });
+    }); 
+
+
 });

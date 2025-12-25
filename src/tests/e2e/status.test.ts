@@ -139,7 +139,11 @@ describe('should delete all orders', () => {
         expect(response.body).toEqual([]);
 
     }); 
-
+    xit('try to delete a non existing order', async () => {
+        const response = await request(server).delete('/orders/1234');
+        expect(response.status).toBe(404);
+        expect(response.text).toBe('Order not found');      
+    });
 
 });
 async function createValidOrder(server: Server, discount?: string ) {

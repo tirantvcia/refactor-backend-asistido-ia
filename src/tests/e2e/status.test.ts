@@ -163,7 +163,7 @@ describe('should completeOrder an order', () => {
     });
     it('try to complete an not found order unsuccessfully', async () => {
         const response = await request(server).post("/orders/1234/complete");
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(400);
         expect(response.text).toBe('Order not found to complete');
     });
     it('complete an order successfully', async () => {

@@ -180,8 +180,8 @@ describe('should completeOrder an order', () => {
         const order = responseGetOrder.body[0];
         const response = await request(server).post(`/orders/${order._id}/complete`);
         const responseRepeatingCompleteAction = await request(server).post(`/orders/${order._id}/complete`);
+        expect(responseRepeatingCompleteAction.status).toBe(400);
         const status = 'COMPLETED';
-        expect(response.status).toBe(200);
         expect(responseRepeatingCompleteAction.text).toBe(`Cannot complete an order with status: ${status}`);
     });
 });

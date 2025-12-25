@@ -174,6 +174,16 @@ describe('should completeOrder an order', () => {
         expect(response.status).toBe(200);
         expect(response.text).toBe(`Order with id ${order._id} completed`);
     });
+    it('try to complete an order just completed', async () => {
+        await createValidOrder(server);
+        const responseGetOrder = await request(server).get('/orders');
+        const order = responseGetOrder.body[0];
+        const response = await request(server).post(`/orders/${order._id}/complete`);
+        const responseRepeatingCompleteAction = await request(server).post(`/orders/${order._id}/complete`);
+        const status = 'COMPLETED';
+        expect(response.status).toBe(200);
+        expect(responseRepeatingCompleteAction.text).toBe(`Cannot complete an order with status: ${status}`);
+    });
 });
        
 async function createValidOrder(server: Server, discount?: string ) {

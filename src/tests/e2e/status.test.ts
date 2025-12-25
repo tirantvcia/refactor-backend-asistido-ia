@@ -146,6 +146,28 @@ describe('should delete all orders', () => {
     });
 
 });
+describe('should completeOrder an order', () => {
+    let server : Server;
+    beforeAll(async () => {
+        const DB_URL = process.env.MONGODB_URI as string;
+        const PORT = process.env.PORT as string;
+        server = createServer(DB_URL,  Number(PORT));
+        await mongoose.connection.collection('orders').deleteMany({});
+    }
+    );
+    afterAll(() => {
+        server.close();
+    });
+    afterEach(async () => {
+        await mongoose.connection.collection('orders').deleteMany({});
+    });
+    it('try to complete an not found order unsuccessfully', async () => {
+        const response = await request(server).post("/orders/1234/complete");
+        expect(response.status).toBe(200);
+        expect(response.text).toBe('Order not found to complete');
+    });
+});
+       
 async function createValidOrder(server: Server, discount?: string ) {
 
     const newOrder = {

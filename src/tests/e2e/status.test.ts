@@ -166,6 +166,14 @@ describe('should completeOrder an order', () => {
         expect(response.status).toBe(200);
         expect(response.text).toBe('Order not found to complete');
     });
+    it('complete an order successfully', async () => {
+        await createValidOrder(server);
+        const responseGetOrder = await request(server).get('/orders');
+        const order = responseGetOrder.body[0];
+        const response = await request(server).post(`/orders/${order._id}/complete`);
+        expect(response.status).toBe(200);
+        expect(response.text).toBe(`Order with id ${order._id} completed`);
+    });
 });
        
 async function createValidOrder(server: Server, discount?: string ) {

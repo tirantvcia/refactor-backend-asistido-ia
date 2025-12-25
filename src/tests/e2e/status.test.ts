@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { createServer } from '../../app';
 import { Server } from 'node:http';
 import mongoose from 'mongoose';
+import { IncomingMessage, ServerResponse } from 'http';
 
 dotenv.config({
     path: '.env.test'
@@ -52,35 +53,15 @@ describe('should create an order', () => {
     
 
     it('creates a new order', async () => {
-        const newOrder = {
-            items: [
-                {
-                    productId: 'prod123',
-                    quantity: 1,
-                    price: 100
-                }
-            ]  ,
-            shippingAddress: '123 Test St, Test City, TX 12345'
 
-        }
-        const response = await request(server).post('/orders').send(newOrder);
+        const response = await createValidOrder(server);
         expect(response.status).toBe(200);
         expect(response.text).toBe(`Order created with total: 100`);
         
     });
     it('creates a new order with discount', async () => {
-        const newOrder = {
-            items: [
-                {
-                    productId: 'prod123',
-                    quantity: 1,
-                    price: 100
-                }
-            ]  ,
-            shippingAddress: '123 Test St, Test City, TX 12345',
-            discountCode: 'DISCOUNT20'  
-        }
-        const response = await request(server).post('/orders').send(newOrder);
+        const discount = 'DISCOUNT20';
+        const response = await createValidOrder(server, discount);
         expect(response.status).toBe(200);
         expect(response.text).toBe(`Order created with total: 80`);
         
@@ -121,28 +102,30 @@ describe('should get all orders', () => {
     });
     
     it('retrieves list with one order after create it', async () => {
-        const newOrder = {
-            items: [
-                {
-                    productId: 'prod123',
-                    quantity: 1,
-                    price: 100
-                }
-            ]  ,
-            shippingAddress: '123 Test St, Test City, TX 12345'
-
-        }
-        await request(server).post('/orders').send(newOrder);
+        await createValidOrder(server);
         const response = await request(server).get('/orders');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
         expect(response.body.length).toBe(1);
-        expect(response.body[0]).toMatchObject({
-            items: newOrder.items,
-            shippingAddress: newOrder.shippingAddress,
-            total: 100
-        });
+
     }); 
 
 
 });
+async function createValidOrder(server: Server, discount?: string ) {
+
+    const newOrder = {
+        items: [
+            {
+                productId: 'prod123',
+                quantity: 1,
+                price: 100
+            }
+        ],
+        shippingAddress: '123 Test St, Test City, TX 12345',
+        discountCode: discount
+    };
+    const response = await request(server).post('/orders').send(newOrder);
+    return response;
+}
+

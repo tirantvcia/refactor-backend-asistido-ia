@@ -185,6 +185,34 @@ describe('should completeOrder an order', () => {
         expect(responseRepeatingCompleteAction.text).toBe(`Cannot complete an order with status: ${status}`);
     });
 });
+
+
+describe('should update an order', () => {
+    let server : Server;
+    beforeAll(async () => {
+        const DB_URL = process.env.MONGODB_URI as string;
+        const PORT = process.env.PORT as string;
+        server = createServer(DB_URL,  Number(PORT));
+        await mongoose.connection.collection('orders').deleteMany({});
+    }
+    );
+    afterAll(() => {
+        server.close();
+    });
+    afterEach(async () => {
+        await mongoose.connection.collection('orders').deleteMany({});
+    });
+
+    it('update an order shipping address successfully', async () => {
+        await createValidOrder(server);
+        const responseGetOrder = await request(server).get('/orders');
+        const order = responseGetOrder.body[0];
+        const newAddress = '456 New St, New City, NY 67890';
+        const response = await request(server).put(`/orders/${order._id}`).send({ shippingAddress: newAddress });
+        expect(response.status).toBe(200);
+        expect(response.text).  toBe(`Order updated. New status: ${order.status}`);
+    });
+});
        
 async function createValidOrder(server: Server, discount?: string ) {
 

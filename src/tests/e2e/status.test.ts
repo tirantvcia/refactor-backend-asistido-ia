@@ -212,6 +212,12 @@ describe('should update an order', () => {
         expect(response.status).toBe(200);
         expect(response.text).  toBe(`Order updated. New status: ${order.status}`);
     });
+    it('try to update unsuccessfully a not found order', async () => {
+        const newAddress = '456 New St, New City, NY 67890';
+        const response = await request(server).put("/orders/1234").send({ shippingAddress: newAddress });
+        expect(response.status).toBe(404);
+        expect(response.text).toBe('Order not found');
+    });
 });
        
 async function createValidOrder(server: Server, discount?: string ) {

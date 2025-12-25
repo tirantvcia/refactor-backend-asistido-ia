@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { createServer } from '../../app';
 import { Server } from 'node:http';
 import mongoose from 'mongoose';
-import { IncomingMessage, ServerResponse } from 'http';
 
 dotenv.config({
     path: '.env.test'
@@ -107,6 +106,37 @@ describe('should get all orders', () => {
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
         expect(response.body.length).toBe(1);
+
+    }); 
+
+
+});
+describe('should delete all orders', () => {
+    let server : Server;
+    beforeAll(async () => {
+        const DB_URL = process.env.MONGODB_URI as string;
+        const PORT = process.env.PORT as string;
+        server = createServer(DB_URL,  Number(PORT));
+        await mongoose.connection.collection('orders').deleteMany({});
+    }
+    );
+    afterAll(() => {
+        server.close();
+    }); 
+    afterEach(async () => {
+        await mongoose.connection.collection('orders').deleteMany({});
+    });
+
+
+    it('deletes an order successfully', async () => {
+        await createValidOrder(server);
+        const responseGetOrder = await request(server).get('/orders');
+        const order = responseGetOrder.body[0];
+        await request(server).delete(`/orders/${order._id}`);
+        const response = await request(server).get('/orders');
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body).toEqual([]);
 
     }); 
 

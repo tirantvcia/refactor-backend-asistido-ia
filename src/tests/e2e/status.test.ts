@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { createServer } from '../../app';
 import { Server } from 'node:http';
 import mongoose from 'mongoose';
+import { OrderStatus } from '../../domain/models';
 
 dotenv.config({
     path: '.env.test'
@@ -181,7 +182,7 @@ describe('should completeOrder an order', () => {
         const response = await request(server).post(`/orders/${order._id}/complete`);
         const responseRepeatingCompleteAction = await request(server).post(`/orders/${order._id}/complete`);
         expect(responseRepeatingCompleteAction.status).toBe(400);
-        const status = 'COMPLETED';
+        const status = OrderStatus.COMPLETED;
         expect(responseRepeatingCompleteAction.text).toBe(`Cannot complete an order with status: ${status}`);
     });
 });

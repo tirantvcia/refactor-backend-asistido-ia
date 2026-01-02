@@ -1,15 +1,4 @@
-class PositiveNumber {
-
-    static create(value: number): PositiveNumber {
-        if (value < 0) {
-            throw new Error("Value must be positive");
-        }
-
-        return new PositiveNumber(value);
-    }
-    private constructor(readonly value: number) {
-    }
-}
+import { Address, PositiveNumber } from "../../domain/valueObjects";
 
 describe("A positive number value object", () => {
     it("should create a positive number successfully", () => {
@@ -18,5 +7,16 @@ describe("A positive number value object", () => {
     });
     it("should not create a positive number with negative value", () => {
         expect(() => PositiveNumber.create(-5)).toThrowError("Value must be positive");
+    });
+});
+describe("An address value object", () => {
+    // Additional tests for Address value object can be added here
+    it("should create a valid address successfully", () => {
+        const anAddress = Address.create("123 Main St, Springfield, IL, 62701, USA");
+        expect(anAddress.value).toBe("123 Main St, Springfield, IL, 62701, USA");
+    })
+    it("should not create an empty address", () => {
+        expect(() => Address.create("")).toThrowError("Address cannot be empty");
+        expect(() => Address.create("   ")).toThrowError("Address cannot be empty");
     });
 });

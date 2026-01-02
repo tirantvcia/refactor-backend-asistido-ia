@@ -5,3 +5,5 @@ dist/
 .env
 .env.test
 .tsconfig.tsbuildinfo
+.env
+.env.test

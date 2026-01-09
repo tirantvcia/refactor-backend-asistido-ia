@@ -1,8 +1,10 @@
+import { DomainError } from "./error";
+
 export class PositiveNumber {
 
     static create(value: number): PositiveNumber {
         if (value < 0) {
-            throw new Error("Value must be positive");
+            throw new DomainError("Value must be positive");
         }
 
         return new PositiveNumber(value);
@@ -13,7 +15,7 @@ export class PositiveNumber {
 export class Address {
     static create(value: string): Address {
         if (!value || value.trim().length === 0) {
-            throw new Error("Address cannot be empty");
+            throw new DomainError("Address cannot be empty");
         }
         return new Address(value);
     }

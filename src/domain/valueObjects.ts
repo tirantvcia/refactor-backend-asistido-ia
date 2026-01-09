@@ -3,6 +3,9 @@ import { DomainError } from "./error";
 
 
 export class PositiveNumber {
+    public multiply(number: PositiveNumber): PositiveNumber {
+        return PositiveNumber.create(this.value * number.value);
+    }
 
     static create(value: number): PositiveNumber {
         if (value < 0) {
@@ -30,6 +33,22 @@ export class Id {
         return new Id(uuid());
     }
     private constructor(readonly value: string) {
+    }
+}
+
+export class OrderLine {
+    static create(id: Id, quantity: PositiveNumber, price: PositiveNumber): OrderLine {
+        return new OrderLine(id, quantity, price);
+    }
+    private constructor(
+        readonly id: Id,
+        readonly quantity: PositiveNumber,
+        readonly price: PositiveNumber
+    ) {
+    }   
+
+    public calculateSubtotal(): PositiveNumber {
+        return this.price.multiply(this.quantity);
     }
 }
 

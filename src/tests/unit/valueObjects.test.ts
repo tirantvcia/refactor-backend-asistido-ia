@@ -1,4 +1,4 @@
-import { Address, PositiveNumber } from "../../domain/valueObjects";
+import { Address, Id, PositiveNumber } from "../../domain/valueObjects";
 
 describe("A positive number value object", () => {
     it("should create a positive number successfully", () => {
@@ -19,4 +19,13 @@ describe("An address value object", () => {
         expect(() => Address.create("")).toThrowError("Address cannot be empty");
         expect(() => Address.create("   ")).toThrowError("Address cannot be empty");
     });
+});
+
+describe("An ID value object", () => {
+    // Additional tests for Id value object can be added here
+    it("should create a valid ID successfully", () => {
+        const anId = Id.create();
+        const otherId = Id.create();
+        expect(anId.value).not.toBe(otherId.value);
+    })
 });

@@ -1,4 +1,6 @@
+import { v4 as uuid } from "uuid";
 import { DomainError } from "./error";
+
 
 export class PositiveNumber {
 
@@ -22,4 +24,14 @@ export class Address {
     private constructor(readonly value: string) {
     }
 }
+
+export class Id {
+    static create(): Id {
+        return new Id(uuid());
+    }
+    private constructor(readonly value: string) {
+    }
+}
+
+
 

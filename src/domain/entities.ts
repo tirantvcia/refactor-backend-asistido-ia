@@ -1,3 +1,4 @@
+import { DomainError } from "./error";
 import { DiscountCode } from "./models";
 import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 
@@ -17,6 +18,9 @@ export class Order {
         shippingAddress: Address,
         orderLines: Array<OrderLine>,
         discountCode?: DiscountCode): Order {
+        if (!orderLines || orderLines.length === 0) {
+            throw new DomainError("The order must have at least one item");
+        }
         const status = "PENDING";
         return new Order(id, status, orderLines, discountCode, shippingAddress);
     }

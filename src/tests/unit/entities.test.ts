@@ -23,7 +23,12 @@ describe("Entity tests", () => {
         expect(order.calculateTotal().value).toBe(80);
         
         }
-    );    
+    );   
+    it('fails to create order with missing items', async () => {
+        const id = Id.create();
+        const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
+        expect(() => Order.create(id, address, [])).toThrowError("The order must have at least one item");
+    });     
 });
 
 function createValidOrder(discount?: DiscountCode): Order {

@@ -1,5 +1,5 @@
 import { Order } from "../../domain/entities";
-import { DiscountCode } from "../../domain/models";
+import { DiscountCode, OrderStatus } from "../../domain/models";
 import { Address, Id, OrderLine, PositiveNumber } from "../../domain/valueObjects";
 
 describe("Entity tests", () => {
@@ -7,7 +7,7 @@ describe("Entity tests", () => {
 
         const order: Order = createValidOrder();
         expect(order).toBeInstanceOf(Order);
-        expect(order.status).toBe("PENDING");
+        expect(order.status).toBe( OrderStatus.CREATED);
         expect(order.orderLines.length).toBe(1);
         expect(order.orderLines[0].quantity.value).toBe(1);
         expect(order.orderLines[0].price.value).toBe(100);
@@ -25,19 +25,18 @@ describe("Entity tests", () => {
         }
     );   
     it('fails to create order with missing items', async () => {
-        const id = Id.create();
         const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
-        expect(() => Order.create(id, address, [])).toThrowError("The order must have at least one item");
+        expect(() => Order.create(address, [])).toThrowError("The order must have at least one item");
     });     
 });
 
 function createValidOrder(discount?: DiscountCode): Order {
-    const id = Id.create();
+
     const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
     const orderLine1 = OrderLine.create(
         Id.create(),
         PositiveNumber.create(1),
         PositiveNumber.create(100)
     );
-    return Order.create(id, address, [orderLine1], discount);
+    return Order.create(address, [orderLine1], discount);
 }

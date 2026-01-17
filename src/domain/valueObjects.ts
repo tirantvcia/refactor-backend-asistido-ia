@@ -3,8 +3,8 @@ import { DomainError } from "./error";
 
 
 export class PositiveNumber {
-    sum(value: number): PositiveNumber {
-        return PositiveNumber.create(this.value + value);
+    sum(number: PositiveNumber): PositiveNumber {
+        return PositiveNumber.create(this.value + number.value);
     }
     
     public multiply(number: PositiveNumber): PositiveNumber {

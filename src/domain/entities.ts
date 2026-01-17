@@ -5,9 +5,13 @@ import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 export class Order {
     calculateTotal() {
        const orderLinesTotal = this.orderLines.reduce((total, line) => {
-            return total.sum(line.calculateSubtotal().value);
+            return total.sum(line.calculateSubtotal());
         }, PositiveNumber.create(0));
 
+        return this.applyDiscount(orderLinesTotal);
+
+    }
+    applyDiscount(orderLinesTotal: PositiveNumber) {
         if (this.discountCode === 'DISCOUNT20') {
             return orderLinesTotal.multiply(PositiveNumber.create(0.8));
         }

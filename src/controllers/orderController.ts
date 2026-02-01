@@ -6,34 +6,6 @@ import { Order } from '../domain/entities';
 import { DomainError } from '../domain/error';
 
 // Create a new order
-export const createOrderBack = async (req: Request, res: Response) => {
-    console.log("POST /orders");
-    const { items, discountCode, shippingAddress } = req.body;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.send('The order must have at least one item');
-    }
-
-    let total = 0;
-    for (const item of items) {
-        total += (item.price || 0) * (item.quantity || 0);
-    }
-
-    if (discountCode === 'DISCOUNT20') {
-        total = total * 0.8;
-    }
-
-    const newOrder = new OrderModel({
-        items,
-        discountCode,
-        shippingAddress,
-        total,
-    });
-    console.log('Creating order with total: ' + total);
-    await newOrder.save();
-    res.send(`Order created with total: ${total}`);
-};
-
 export const createOrder = async (req: Request, res: Response) => {
     console.log("POST /orders");
     try {

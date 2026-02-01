@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import { OrderModel } from '../models/orderModel';
 import { OrderStatus } from '../domain/models';
+import { Address, Id, OrderLine, PositiveNumber } from '../domain/valueObjects';
+import { Order } from '../domain/entities';
+import { DomainError } from '../domain/error';
 
 // Create a new order
-export const createOrder = async (req: Request, res: Response) => {
+export const createOrderBack = async (req: Request, res: Response) => {
     console.log("POST /orders");
     const { items, discountCode, shippingAddress } = req.body;
 
@@ -29,6 +32,42 @@ export const createOrder = async (req: Request, res: Response) => {
     console.log('Creating order with total: ' + total);
     await newOrder.save();
     res.send(`Order created with total: ${total}`);
+};
+
+export const createOrder = async (req: Request, res: Response) => {
+    console.log("POST /orders");
+    try {
+        const { items, discountCode, shippingAddress } = req.body;
+
+        const address = Address.create(shippingAddress);
+        let orderLines: OrderLine[] = [];
+        if (items && Array.isArray(items) && items.length > 0) {
+            orderLines = items.map((item: any) => {
+                return OrderLine.create(
+                    Id.from(item.productId),
+                    PositiveNumber.create(item.quantity),
+                    PositiveNumber.create(item.price)
+                );
+            });
+        }
+
+    
+        const order = Order.create(address, orderLines, discountCode);
+
+        let total = order.calculateTotal().value;
+
+        const newOrder = new OrderModel(order.toDto());
+        console.log('Creating order with total: ' + total);
+        await newOrder.save();
+        res.send(`Order created with total: ${total}`);
+
+    } catch (error: any) {
+        if(error instanceof DomainError) {
+            return res.status(400).send(error.message);    
+        }
+        return res.status(500).send("Unexpected error");
+    }
+
 };
 
 // Get all orders

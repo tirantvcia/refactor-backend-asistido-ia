@@ -74,7 +74,7 @@ describe('should create an order', () => {
         }
         const response = await request(server).post('/orders').send(newOrder);
         expect(response.text).toBe('The order must have at least one item');
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(400);
     }
     );
 });

@@ -36,6 +36,13 @@ export class Id {
     static create(): Id {
         return new Id(uuid());
     }
+    static from(value: string): Id {
+        if (!value || value.trim().length === 0) {
+            throw new DomainError("Id cannot be empty");
+        }
+        return new Id(value);
+    }
+    
     private constructor(readonly value: string) {
     }
 }

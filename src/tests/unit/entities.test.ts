@@ -7,7 +7,7 @@ describe("Entity tests", () => {
 
         const order: Order = createValidOrder();
         expect(order).toBeInstanceOf(Order);
-        expect(order.status).toBe( OrderStatus.CREATED);
+        expect(order.isCreated()).toBe(true);
         expect(order.orderLines.length).toBe(1);
         expect(order.orderLines[0].quantity.value).toBe(1);
         expect(order.orderLines[0].price.value).toBe(100);
@@ -27,7 +27,19 @@ describe("Entity tests", () => {
     it('fails to create order with missing items', async () => {
         const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
         expect(() => Order.create(address, [])).toThrowError("The order must have at least one item");
-    });     
+    });    
+    
+    it('completes a given order', async () => {
+        const order: Order = createValidOrder();
+        expect(order.isCreated()).toBe(true);
+        // Simulate completing the order
+        order.completeOrder();
+        expect(order.isCompleted()).toBe(true);
+    });
+    it('fails to complete order with missing items', async () => {
+        const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
+        expect(() => Order.create(address, [])).toThrowError("The order must have at least one item");
+    });  
 });
 
 function createValidOrder(discount?: DiscountCode): Order {

@@ -3,21 +3,7 @@ import { DiscountCode, OrderStatus } from "./models";
 import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 
 export class Order {
-    calculateTotal() {
-       const orderLinesTotal = this.orderLines.reduce((total, line) => {
-            return total.sum(line.calculateSubtotal());
-        }, PositiveNumber.create(0));
 
-        return this.applyDiscount(orderLinesTotal);
-
-    }
-    applyDiscount(orderLinesTotal: PositiveNumber) {
-        if (this.discountCode === 'DISCOUNT20') {
-            return orderLinesTotal.multiply(PositiveNumber.create(0.8));
-        }
-        return orderLinesTotal;
-    }
-    
     public static create(      
         shippingAddress: Address,
         orderLines: Array<OrderLine>,
@@ -31,10 +17,37 @@ export class Order {
     }
     private constructor(
         readonly id: Id,
-        readonly status: string,
+        private status: string,
         readonly orderLines: Array<OrderLine>,
         readonly discountCode: DiscountCode | undefined,
         readonly shippingAddress: Address
     ) {
     }
+
+    isCreated(): boolean {
+        return this.status === OrderStatus.CREATED;
+    }
+    isCompleted(): boolean {
+        return this.status === OrderStatus.COMPLETED;
+    }
+    completeOrder()  {
+        this.status = OrderStatus.COMPLETED;
+    }
+
+    calculateTotal() {
+       const orderLinesTotal = this.orderLines.reduce((total, line) => {
+            return total.sum(line.calculateSubtotal());
+        }, PositiveNumber.create(0));
+
+        return this.applyDiscount(orderLinesTotal);
+    }
+    
+    applyDiscount(orderLinesTotal: PositiveNumber) {
+        if (this.discountCode === 'DISCOUNT20') {
+            return orderLinesTotal.multiply(PositiveNumber.create(0.8));
+        }
+        return orderLinesTotal;
+    }
+    
+ 
 }

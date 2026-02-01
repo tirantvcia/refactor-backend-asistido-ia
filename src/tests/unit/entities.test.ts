@@ -40,6 +40,13 @@ describe("Entity tests", () => {
         const address = Address.create("123 Main St, Springfield, IL, 62701, USA");
         expect(() => Order.create(address, [])).toThrowError("The order must have at least one item");
     });  
+    it('fails to complete order with no created status', async () => {
+        const order: Order = createValidOrder();
+        expect(order.isCreated()).toBe(true);
+        // Simulate completing the order
+        order.completeOrder();
+        expect(() =>  order.completeOrder()).toThrowError(`Cannot complete an order with status: ${OrderStatus.COMPLETED}`);
+    });  
 });
 
 function createValidOrder(discount?: DiscountCode): Order {

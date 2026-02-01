@@ -31,6 +31,9 @@ export class Order {
         return this.status === OrderStatus.COMPLETED;
     }
     completeOrder()  {
+        if (!this.isCreated()) {
+            throw new DomainError(`Cannot complete an order with status: ${this.status}`);
+        }   
         this.status = OrderStatus.COMPLETED;
     }
 

@@ -3,6 +3,20 @@ import { DiscountCode, OrderStatus } from "./models";
 import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 
 export class Order {
+    toDto() {
+        return {
+            id: this.id.value,
+            shippingAddress: this.shippingAddress.value,
+            thisLines: this.orderLines.map(ol => ({
+                id: ol.id.value,
+                quantity: ol.quantity.value,
+                price: ol.price.value
+            })),
+            discountCode: this.discountCode,
+            status: this.getStatus()
+        };
+    }
+
 
     public static create(      
         shippingAddress: Address,
@@ -52,5 +66,8 @@ export class Order {
         return orderLinesTotal;
     }
     
+    getStatus(): any {
+        return this.status;
+    }   
  
 }

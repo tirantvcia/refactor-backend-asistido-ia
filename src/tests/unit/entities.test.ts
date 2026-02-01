@@ -46,7 +46,22 @@ describe("Entity tests", () => {
         // Simulate completing the order
         order.completeOrder();
         expect(() =>  order.completeOrder()).toThrowError(`Cannot complete an order with status: ${OrderStatus.COMPLETED}`);
-    });  
+    }); 
+    it("transform an order to DTO", async () => {
+        const discount = 'DISCOUNT20';
+        const order: Order = createValidOrder(discount);
+        const dto = order.toDto();
+
+        expect(dto.id).toEqual(order.id.value);
+        expect(dto.shippingAddress).toEqual(order.shippingAddress.value);
+        expect(dto.thisLines.length).toBe(1);
+        expect(dto.thisLines[0].id).toEqual(order.orderLines[0].id.value);
+        expect(dto.thisLines[0].quantity).toEqual(order.orderLines[0].quantity.value);
+        expect(dto.thisLines[0].price).toEqual(order.orderLines[0].price.value);
+        expect(dto.discountCode).toEqual(order.discountCode);
+        expect(dto.status).toEqual(order.getStatus());
+    });
+    
 });
 
 function createValidOrder(discount?: DiscountCode): Order {

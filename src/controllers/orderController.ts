@@ -23,7 +23,6 @@ export const createOrder = async (req: Request, res: Response) => {
             });
         }
 
-    
         const order = Order.create(address, orderLines, discountCode);
 
         let total = order.calculateTotal().value;
@@ -90,7 +89,7 @@ export const updateOrder = async (req: Request, res: Response) => {
 };
 
 // Complete order
-export const completeOrder = async (req: Request, res: Response) => {
+export const completeOrderOld = async (req: Request, res: Response) => {
     console.log("POST /orders/:id/complete");
     const { id } = req.params;
 
@@ -109,7 +108,7 @@ export const completeOrder = async (req: Request, res: Response) => {
 };
 
 // Complete order
-export const completeOrderNew= async (req: Request, res: Response) => {
+export const completeOrder = async (req: Request, res: Response) => {
     console.log("POST /orders/:id/complete");
 
     try {
@@ -123,7 +122,11 @@ export const completeOrderNew= async (req: Request, res: Response) => {
         const orderDto = {
             id: orderDocument._id.toString(),
             shippingAddress: orderDocument.shippingAddress,
-            thisLines: orderDocument.items,
+            thisLines: orderDocument.items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                price: item.price
+            })),
             discountCode: orderDocument.discountCode,
             status: orderDocument.status as OrderStatus
         }

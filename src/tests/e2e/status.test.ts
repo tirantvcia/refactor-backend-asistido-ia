@@ -169,8 +169,10 @@ describe('should completeOrder an order', () => {
     });
     it('complete an order successfully', async () => {
         await createValidOrder(server);
+
         const responseGetOrder = await request(server).get('/orders');
         const order = responseGetOrder.body[0];
+         console.log("order complete an order successfully: ", order);
         const response = await request(server).post(`/orders/${order._id}/complete`);
         expect(response.status).toBe(200);
         expect(response.text).toBe(`Order with id ${order._id} completed`);
@@ -179,6 +181,7 @@ describe('should completeOrder an order', () => {
         await createValidOrder(server);
         const responseGetOrder = await request(server).get('/orders');
         const order = responseGetOrder.body[0];
+
         const response = await request(server).post(`/orders/${order._id}/complete`);
         const responseRepeatingCompleteAction = await request(server).post(`/orders/${order._id}/complete`);
         expect(responseRepeatingCompleteAction.status).toBe(400);

@@ -2,6 +2,18 @@ import { DomainError } from "./error";
 import { DiscountCode, OrderStatus } from "./models";
 import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 
+type OrderDto = {
+    id: string;
+    shippingAddress: string;
+    thisLines: {
+        id: string;
+        quantity: number;
+        price: number;
+    }[];
+    discountCode: "DISCOUNT20" | undefined;
+    status: any;
+};
+
 export class Order {
 
     toDto() {
@@ -18,11 +30,7 @@ export class Order {
         };
     }
 
-    static fromDto(dto: { 
-            id: string; 
-            shippingAddress: string; 
-            thisLines: { id: string; quantity: number; price: number; }[]; 
-            discountCode: "DISCOUNT20" | undefined; status: any; }) {
+    static fromDto(dto: OrderDto) {
         if (!dto.thisLines || dto.thisLines.length === 0) {
             throw new DomainError("The order must have at least one item");
         }

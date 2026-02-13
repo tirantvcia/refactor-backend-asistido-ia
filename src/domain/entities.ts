@@ -3,6 +3,7 @@ import { DiscountCode, OrderStatus } from "./models";
 import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 
 export class Order {
+
     toDto() {
         return {
             id: this.id.value,
@@ -17,6 +18,25 @@ export class Order {
         };
     }
 
+    static fromDto(dto: { 
+            id: string; 
+            shippingAddress: string; 
+            thisLines: { id: string; quantity: number; price: number; }[]; 
+            discountCode: "DISCOUNT20" | undefined; status: any; }) {
+        if (!dto.thisLines || dto.thisLines.length === 0) {
+            throw new DomainError("The order must have at least one item");
+        }
+        const status = dto.status;
+        const shippingAddress = Address.create(dto.shippingAddress);
+        const orderLines = dto.thisLines.map(ol => OrderLine.create(
+            Id.from(ol.id),
+            PositiveNumber.create(ol.quantity),
+            PositiveNumber.create(ol.price)
+        ));
+        const discountCode = dto.discountCode;  
+        const id = Id.from(dto.id);
+        return new Order(id, status, orderLines, discountCode, shippingAddress);
+    }
 
     public static create(      
         shippingAddress: Address,

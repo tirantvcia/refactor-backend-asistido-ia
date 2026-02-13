@@ -61,6 +61,22 @@ describe("Entity tests", () => {
         expect(dto.discountCode).toEqual(order.discountCode);
         expect(dto.status).toEqual(order.getStatus());
     });
+
+    it("creates an order from DTO", async () => {
+        const discount = 'DISCOUNT20';
+        const order: Order = createValidOrder(discount);
+        const dto = order.toDto();
+        const newOrder = Order.fromDto(dto);
+        
+        expect(newOrder.id.value).toEqual(order.id.value);
+        expect(newOrder.shippingAddress.value).toEqual(order.shippingAddress.value);
+        expect(newOrder.orderLines.length).toBe(1);
+        expect(newOrder.orderLines[0].id.value).toEqual(order.orderLines[0].id.value);
+        expect(newOrder.orderLines[0].quantity.value).toEqual(order.orderLines[0].quantity.value);
+        expect(newOrder.orderLines[0].price.value).toEqual(order.orderLines[0].price.value);
+        expect(newOrder.discountCode).toEqual(order.discountCode);
+        expect(newOrder.getStatus()).toEqual(order.getStatus());
+    });
     
 });
 

@@ -55,7 +55,7 @@ describe("Entity tests", () => {
         expect(dto.id).toEqual(order.id.value);
         expect(dto.shippingAddress).toEqual(order.shippingAddress.value);
         expect(dto.thisLines.length).toBe(1);
-        expect(dto.thisLines[0].id).toEqual(order.orderLines[0].id.value);
+        expect(dto.thisLines[0].productId).toEqual(order.orderLines[0].id.value);
         expect(dto.thisLines[0].quantity).toEqual(order.orderLines[0].quantity.value);
         expect(dto.thisLines[0].price).toEqual(order.orderLines[0].price.value);
         expect(dto.discountCode).toEqual(order.discountCode);

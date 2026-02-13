@@ -108,24 +108,39 @@ export const completeOrder = async (req: Request, res: Response) => {
     res.send(`Order with id ${id} completed`);
 };
 
-
 // Complete order
-export const completeOrderNew = async (req: Request, res: Response) => {
+export const completeOrderNew= async (req: Request, res: Response) => {
     console.log("POST /orders/:id/complete");
-    const { id } = req.params;
 
-    const order = await OrderModel.findById(id);
-    if (!order) {
-        return res.status(400).send('Order not found to complete');
+    try {
+        const { id } = req.params;
+
+        const orderDocument = await OrderModel.findById(id);
+        if (!orderDocument) {
+            return res.status(400).send('Order not found to complete');
+        }
+
+        const orderDto = {
+            id: orderDocument._id.toString(),
+            shippingAddress: orderDocument.shippingAddress,
+            thisLines: orderDocument.items,
+            discountCode: orderDocument.discountCode,
+            status: orderDocument.status as OrderStatus
+        }
+
+        const order = Order.fromDto(orderDto);
+        order.completeOrder();        
+        const newOrder = new OrderModel(order.toDto());
+        await newOrder.save();
+        res.send(`Order with id ${id} completed`);
+    
+    } catch (error: any) {
+        if(error instanceof DomainError) {
+            return res.status(400).send(error.message);    
+        }
+        return res.status(500).send("Unexpected error");
     }
 
-    if (order.status !== OrderStatus.CREATED) {
-        return res.status(400).send(`Cannot complete an order with status: ${order.status}`);
-    }
-
-    order.status = OrderStatus.COMPLETED;
-    await order.save();
-    res.send(`Order with id ${id} completed`);
 };
 
 // Delete order

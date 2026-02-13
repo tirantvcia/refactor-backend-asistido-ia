@@ -6,7 +6,7 @@ type OrderDto = {
     id: string;
     shippingAddress: string;
     thisLines: {
-        id: string;
+        productId: string;
         quantity: number;
         price: number;
     }[];
@@ -25,7 +25,7 @@ export class Order {
         const status = dto.status;
         const shippingAddress = Address.create(dto.shippingAddress);
         const orderLines = dto.thisLines.map(ol => OrderLine.create(
-            Id.from(ol.id),
+            Id.from(ol.productId),
             PositiveNumber.create(ol.quantity),
             PositiveNumber.create(ol.price)
         ));
@@ -59,7 +59,7 @@ export class Order {
             id: this.id.value,
             shippingAddress: this.shippingAddress.value,
             thisLines: this.orderLines.map(ol => ({
-                id: ol.id.value,
+                productId: ol.id.value,
                 quantity: ol.quantity.value,
                 price: ol.price.value
             })),

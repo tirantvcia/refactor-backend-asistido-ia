@@ -16,19 +16,7 @@ type OrderDto = {
 
 export class Order {
 
-    toDto() {
-        return {
-            id: this.id.value,
-            shippingAddress: this.shippingAddress.value,
-            thisLines: this.orderLines.map(ol => ({
-                id: ol.id.value,
-                quantity: ol.quantity.value,
-                price: ol.price.value
-            })),
-            discountCode: this.discountCode,
-            status: this.getStatus()
-        };
-    }
+
 
     static fromDto(dto: OrderDto) {
         if (!dto.thisLines || dto.thisLines.length === 0) {
@@ -64,6 +52,20 @@ export class Order {
         readonly discountCode: DiscountCode | undefined,
         readonly shippingAddress: Address
     ) {
+    }
+
+    toDto() {
+        return {
+            id: this.id.value,
+            shippingAddress: this.shippingAddress.value,
+            thisLines: this.orderLines.map(ol => ({
+                id: ol.id.value,
+                quantity: ol.quantity.value,
+                price: ol.price.value
+            })),
+            discountCode: this.discountCode,
+            status: this.getStatus()
+        };
     }
 
     isCreated(): boolean {

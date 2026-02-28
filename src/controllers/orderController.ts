@@ -26,9 +26,15 @@ export const createOrder = async (req: Request, res: Response) => {
         const order = Order.create(address, orderLines, discountCode);
 
         let total = order.calculateTotal().value;
+        const orderDto = order.toDto();
+        const newOrder = new OrderModel({
+                    _id: orderDto.id,
+                    shippingAddress: orderDto.shippingAddress,
+                    status: orderDto.status,
+                    items: orderDto.items,  
+                    total: total
+        });
 
-        const newOrder = new OrderModel(order.toDto());
-        console.log('Creating order with total: ' + total);
         await newOrder.save();
         res.send(`Order created with total: ${total}`);
 
@@ -89,25 +95,6 @@ export const updateOrder = async (req: Request, res: Response) => {
 };
 
 // Complete order
-export const completeOrderOld = async (req: Request, res: Response) => {
-    console.log("POST /orders/:id/complete");
-    const { id } = req.params;
-
-    const order = await OrderModel.findById(id);
-    if (!order) {
-        return res.status(400).send('Order not found to complete');
-    }
-
-    if (order.status !== OrderStatus.CREATED) {
-        return res.status(400).send(`Cannot complete an order with status: ${order.status}`);
-    }
-
-    order.status = OrderStatus.COMPLETED;
-    await order.save();
-    res.send(`Order with id ${id} completed`);
-};
-
-// Complete order
 export const completeOrder = async (req: Request, res: Response) => {
     console.log("POST /orders/:id/complete");
 
@@ -122,7 +109,7 @@ export const completeOrder = async (req: Request, res: Response) => {
         const orderDto = {
             id: orderDocument._id.toString(),
             shippingAddress: orderDocument.shippingAddress,
-            thisLines: orderDocument.items.map(item => ({
+            items: orderDocument.items.map(item => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 price: item.price
@@ -132,11 +119,20 @@ export const completeOrder = async (req: Request, res: Response) => {
         }
 
         const order = Order.fromDto(orderDto);
-        order.completeOrder();        
-        const newOrder = new OrderModel(order.toDto());
-        await newOrder.save();
+        order.completeOrder();   
+        const orderDtoToUpdate = order.toDto();
+
+        const orderDocumentToUpdate = new OrderModel({
+                    _id: orderDtoToUpdate.id,
+                    shippingAddress: orderDtoToUpdate.shippingAddress,
+                    status: orderDtoToUpdate.status,
+                    items: orderDtoToUpdate.items,   // <-- aquí está la clave
+                    total: order.calculateTotal().value
+        });
+
+        await OrderModel.findByIdAndUpdate(id, orderDocumentToUpdate);
         res.send(`Order with id ${id} completed`);
-    
+   
     } catch (error: any) {
         if(error instanceof DomainError) {
             return res.status(400).send(error.message);    

@@ -5,7 +5,7 @@ import { Address, Id, OrderLine, PositiveNumber } from "./valueObjects";
 type OrderDto = {
     id: string;
     shippingAddress: string;
-    thisLines: {
+    items: {
         productId: string;
         quantity: number;
         price: number;
@@ -19,15 +19,15 @@ export class Order {
 
 
     static fromDto(dto: OrderDto) {
-        if (!dto.thisLines || dto.thisLines.length === 0) {
+        if (!dto.items || dto.items.length === 0) {
             throw new DomainError("The order must have at least one item");
         }
         const status = dto.status;
         const shippingAddress = Address.create(dto.shippingAddress);
-        const orderLines = dto.thisLines.map(ol => OrderLine.create(
-            Id.from(ol.productId),
-            PositiveNumber.create(ol.quantity),
-            PositiveNumber.create(ol.price)
+        const orderLines = dto.items.map(item => OrderLine.create(
+            Id.from(item.productId),
+            PositiveNumber.create(item.quantity),
+            PositiveNumber.create(item.price)
         ));
         const discountCode = dto.discountCode;  
         const id = Id.from(dto.id);
@@ -48,7 +48,7 @@ export class Order {
     private constructor(
         readonly id: Id,
         private status: string,
-        readonly orderLines: Array<OrderLine>,
+        readonly items: Array<OrderLine>,
         readonly discountCode: DiscountCode | undefined,
         readonly shippingAddress: Address
     ) {
@@ -58,7 +58,7 @@ export class Order {
         return {
             id: this.id.value,
             shippingAddress: this.shippingAddress.value,
-            thisLines: this.orderLines.map(ol => ({
+            items: this.items.map(ol => ({
                 productId: ol.id.value,
                 quantity: ol.quantity.value,
                 price: ol.price.value
@@ -75,14 +75,16 @@ export class Order {
         return this.status === OrderStatus.COMPLETED;
     }
     completeOrder()  {
+        console.log("Order.completedOrder: Completing order with status, before checking", this.status);
         if (!this.isCreated()) {
             throw new DomainError(`Cannot complete an order with status: ${this.status}`);
         }   
         this.status = OrderStatus.COMPLETED;
+        console.log("Order.completedOrder: Completing order with status:", this.status);
     }
 
     calculateTotal() {
-       const orderLinesTotal = this.orderLines.reduce((total, line) => {
+       const orderLinesTotal = this.items.reduce((total, line) => {
             return total.sum(line.calculateSubtotal());
         }, PositiveNumber.create(0));
 

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import dotenv from 'dotenv';
-import { createServer } from '../../app';
+import { createServer } from '../../infrastructure/app';
 import { Server } from 'node:http';
 import mongoose from 'mongoose';
 import { OrderStatus } from '../../domain/models';

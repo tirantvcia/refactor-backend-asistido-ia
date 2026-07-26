@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { createServer } from './app';
+import { createServer } from './infrastructure/app';
 
 dotenv.config({
     path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'

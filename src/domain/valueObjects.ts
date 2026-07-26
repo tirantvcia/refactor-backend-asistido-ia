@@ -33,6 +33,9 @@ export class Address {
 }
 
 export class Id {
+    equals(id: Id): boolean {
+       return this.value === id.value;
+    }
     static create(): Id {
         return new Id(uuid());
     }
